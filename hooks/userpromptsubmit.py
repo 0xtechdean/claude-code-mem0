@@ -46,13 +46,16 @@ def search_memories(query: str, config: dict) -> list:
         from mem0 import MemoryClient
 
         client = MemoryClient(api_key=config["api_key"])
-        results = client.search(
+        response = client.search(
             query=query,
             filters={"user_id": config["user_id"]},
             top_k=config["top_k"],
             threshold=config["threshold"]
         )
-        return results
+        # Handle both dict response {"results": [...]} and list response
+        if isinstance(response, dict):
+            return response.get("results", [])
+        return response if isinstance(response, list) else []
     except ImportError:
         print("mem0ai not installed. Run: pip install mem0ai", file=sys.stderr)
         return []
