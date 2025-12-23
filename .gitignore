@@ -5,3 +5,4 @@
 # Claude Code local settings
 .claude/*.local.md
 .claude/*.local.json
+__pycache__/
