@@ -82,9 +82,10 @@ def save_prompt_async(prompt: str, config: dict):
             # Silently fail - don't block the main flow
             print(f"mem0 auto-save error: {e}", file=sys.stderr)
 
-    # Run in background thread so we don't block
-    thread = threading.Thread(target=_save, daemon=True)
+    # Run in thread and wait briefly to ensure request is sent
+    thread = threading.Thread(target=_save)
     thread.start()
+    thread.join(timeout=2.0)  # Wait up to 2 seconds for save to complete
 
 
 def format_memories(results: list) -> str:
