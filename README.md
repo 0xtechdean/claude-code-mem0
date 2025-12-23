@@ -220,6 +220,15 @@ print(f'Found {len(results.get(\"results\", []))} memories')
 
 Contributions are welcome! Please open an issue or pull request at [github.com/0xtechdean/claude-code-mem0](https://github.com/0xtechdean/claude-code-mem0).
 
+## Testing
+
+Run the test suite:
+
+```bash
+pip install pytest
+python -m pytest hooks/tests/ -v
+```
+
 ## License
 
 MIT
