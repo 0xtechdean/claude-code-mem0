@@ -145,6 +145,7 @@ When a session ends, the plugin:
 | `MEM0_TOP_K` | Number of memories to retrieve | `5` |
 | `MEM0_THRESHOLD` | Minimum similarity score (0-1) | `0.3` |
 | `MEM0_SAVE_MESSAGES` | Messages to save per session | `10` |
+| `MEM0_AUTO_SAVE` | Auto-save each prompt to memory | `true` |
 
 ## Commands & Skills
 

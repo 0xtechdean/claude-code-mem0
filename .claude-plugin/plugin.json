@@ -1,6 +1,6 @@
 {
   "name": "mem0",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Persistent memory for Claude Code using mem0.ai - remembers context across conversations",
   "author": {
     "name": "Dean Rubin"

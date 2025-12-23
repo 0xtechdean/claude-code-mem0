@@ -2,17 +2,20 @@
 """
 mem0 UserPromptSubmit Hook
 Searches mem0 for relevant memories before each prompt and injects them into context.
+Also saves each user prompt to mem0 for continuous learning.
 
 Environment Variables:
   MEM0_API_KEY: Required - Your mem0 API key from https://app.mem0.ai
   MEM0_USER_ID: Optional - User identifier for memory scoping (default: claude-code-user)
   MEM0_TOP_K: Optional - Number of memories to retrieve (default: 5)
   MEM0_THRESHOLD: Optional - Minimum similarity score (default: 0.3)
+  MEM0_AUTO_SAVE: Optional - Auto-save prompts to memory (default: true)
 """
 
 import json
 import os
 import sys
+import threading
 from pathlib import Path
 
 
@@ -37,6 +40,7 @@ def get_config():
         "user_id": os.environ.get("MEM0_USER_ID", "claude-code-user"),
         "top_k": int(os.environ.get("MEM0_TOP_K", "5")),
         "threshold": float(os.environ.get("MEM0_THRESHOLD", "0.3")),
+        "auto_save": os.environ.get("MEM0_AUTO_SAVE", "true").lower() == "true",
     }
 
 
@@ -62,6 +66,25 @@ def search_memories(query: str, config: dict) -> list:
     except Exception as e:
         print(f"mem0 search error: {e}", file=sys.stderr)
         return []
+
+
+def save_prompt_async(prompt: str, config: dict):
+    """Save user prompt to mem0 in background thread."""
+    def _save():
+        try:
+            from mem0 import MemoryClient
+            client = MemoryClient(api_key=config["api_key"])
+            client.add(
+                messages=[{"role": "user", "content": prompt}],
+                user_id=config["user_id"]
+            )
+        except Exception as e:
+            # Silently fail - don't block the main flow
+            print(f"mem0 auto-save error: {e}", file=sys.stderr)
+
+    # Run in background thread so we don't block
+    thread = threading.Thread(target=_save, daemon=True)
+    thread.start()
 
 
 def format_memories(results: list) -> str:
@@ -108,6 +131,10 @@ def main():
 
     # Search for relevant memories
     results = search_memories(user_prompt, config)
+
+    # Auto-save this prompt to mem0 (in background)
+    if config["auto_save"]:
+        save_prompt_async(user_prompt, config)
 
     # Format and output memories as plain text (correct format for context injection)
     if results:
