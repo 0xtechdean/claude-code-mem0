@@ -1,0 +1,11 @@
+{
+  "name": "mem0",
+  "version": "0.1.0",
+  "description": "Persistent memory for Claude Code using mem0.ai - remembers context across conversations",
+  "author": {
+    "name": "Dean Rubin"
+  },
+  "repository": "https://github.com/0xtechdean/claude-code-mem0",
+  "keywords": ["memory", "context", "mem0", "persistence", "rag"],
+  "license": "MIT"
+}
