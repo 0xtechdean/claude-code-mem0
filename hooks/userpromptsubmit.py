@@ -93,8 +93,8 @@ def main():
     except json.JSONDecodeError:
         sys.exit(0)
 
-    # Get user prompt
-    user_prompt = input_data.get("user_prompt", "")
+    # Get user prompt (field is "prompt" per Claude Code spec)
+    user_prompt = input_data.get("prompt", "") or input_data.get("user_prompt", "")
     if not user_prompt:
         sys.exit(0)
 
@@ -109,15 +109,12 @@ def main():
     # Search for relevant memories
     results = search_memories(user_prompt, config)
 
-    # Format and output memories
+    # Format and output memories as plain text (correct format for context injection)
     if results:
         message = format_memories(results)
         if message:
-            output = {
-                "continue": True,
-                "message": message
-            }
-            print(json.dumps(output))
+            # Plain text output with exit 0 injects as context
+            print(message)
 
 
 if __name__ == "__main__":

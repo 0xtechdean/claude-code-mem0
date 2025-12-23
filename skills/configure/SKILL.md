@@ -1,3 +1,8 @@
+---
+name: configure
+description: Configure mem0 API key and settings for this project. Use when the user wants to set up mem0, configure memory settings, or add their API key.
+---
+
 # mem0 Configuration Skill
 
 Help the user configure their mem0 integration.

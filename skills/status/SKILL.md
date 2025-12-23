@@ -1,3 +1,8 @@
+---
+name: status
+description: Check mem0 configuration status and test the connection. Use when the user wants to verify mem0 is working, check their API key, or see stored memories.
+---
+
 # mem0 Status Skill
 
 Check the current mem0 configuration and test the connection.

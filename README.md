@@ -4,10 +4,29 @@ Persistent memory for Claude Code using [mem0.ai](https://mem0.ai) - remembers c
 
 ## Features
 
-- **Automatic Memory Retrieval**: Before each prompt, relevant memories are searched and injected into context
-- **Conversation Storage**: When sessions end, conversations are automatically saved to mem0
-- **Semantic Search**: Uses mem0's vector-based search for intelligent memory retrieval
+- **Automatic Memory Retrieval**: Relevant memories are searched and injected before each prompt
+- **Conversation Storage**: Conversations are automatically saved to mem0 when sessions end
+- **Semantic Search**: Vector-based search for intelligent memory retrieval
 - **User Scoping**: Memories are scoped by user ID for personalized experiences
+
+## Requirements
+
+- Python 3.8+
+- Claude Code with plugin support
+- mem0 API key ([get one here](https://app.mem0.ai))
+
+## Quick Start
+
+```bash
+# 1. Add plugin to ~/.claude/settings.json
+# 2. Install dependency
+pip install mem0ai
+
+# 3. Create .env in your project root
+echo "MEM0_API_KEY=your-api-key-here" > .env
+
+# 4. Restart Claude Code
+```
 
 ## Installation
 
@@ -81,10 +100,10 @@ claude-code-mem0/
 │   ├── userpromptsubmit.py   # Memory retrieval before prompts
 │   └── stop.py               # Memory storage on session end
 ├── skills/
-│   ├── skills.json
-│   ├── configure/            # /mem0:configure
-│   └── status/               # /mem0:status
-├── .env.example
+│   ├── configure/
+│   │   └── SKILL.md          # /mem0:configure skill
+│   └── status/
+│       └── SKILL.md          # /mem0:status skill
 └── README.md
 ```
 
@@ -93,24 +112,26 @@ claude-code-mem0/
 ### Memory Retrieval (UserPromptSubmit Hook)
 
 When you submit a prompt, the plugin:
-1. Searches mem0 for memories related to your prompt
-2. Retrieves the top K most relevant memories
-3. Injects them into Claude's context as additional information
+1. Searches mem0 for memories semantically related to your prompt
+2. Retrieves the top K most relevant memories above the similarity threshold
+3. Injects them into Claude's context as a system reminder
 
 Example context injection:
 ```
 ## Relevant memories from previous conversations:
-- [preferences] User prefers TypeScript over JavaScript
-- [project] Working on an e-commerce platform using Next.js
-- [context] Database is PostgreSQL with Prisma ORM
+- User prefers TypeScript over JavaScript
+- Working on an e-commerce platform using Next.js
+- Database is PostgreSQL with Prisma ORM
 ```
 
 ### Memory Storage (Stop Hook)
 
 When a session ends, the plugin:
-1. Extracts recent messages from the conversation
-2. Sends them to mem0 for processing
-3. mem0 automatically extracts and categorizes important information
+1. Extracts the most recent messages from the conversation transcript
+2. Sends them to mem0 for asynchronous processing
+3. mem0 automatically extracts key facts and stores them as memories
+
+> **Note**: Memory processing happens asynchronously. New memories may take a few seconds to become searchable.
 
 ## Configuration Options
 
@@ -139,23 +160,44 @@ Check the current configuration status and test the connection.
 1. Verify `MEM0_API_KEY` is set correctly in `.env`
 2. Check that mem0ai is installed: `pip install mem0ai`
 3. Ensure you have existing memories in mem0
-4. Try lowering `MEM0_THRESHOLD` for broader matches
+4. Try lowering `MEM0_THRESHOLD` for broader matches (e.g., `0.1`)
 
 ### Memories not being saved
 
 1. Check the console for error messages
 2. Verify your API key has write permissions
 3. Ensure conversations have meaningful content
+4. Remember that memory processing is asynchronous - wait a few seconds
 
 ### Testing the connection
 
 ```bash
+# Set your API key
+export MEM0_API_KEY=your-api-key-here
+
+# Test connection and add a memory
 python3 -c "
 from mem0 import MemoryClient
-import os
-client = MemoryClient(api_key=os.environ['MEM0_API_KEY'])
+client = MemoryClient(api_key='$MEM0_API_KEY')
 print('Connection successful!')
-print(client.search('test', filters={'user_id': 'test'}))
+
+# Add a test memory
+result = client.add(
+    messages=[{'role': 'user', 'content': 'Test message'}],
+    user_id='test-user'
+)
+print(f'Add result: {result}')
+"
+```
+
+### Testing memory search
+
+```bash
+python3 -c "
+from mem0 import MemoryClient
+client = MemoryClient(api_key='$MEM0_API_KEY')
+results = client.search('test', filters={'user_id': 'test-user'}, top_k=5)
+print(f'Found {len(results.get(\"results\", []))} memories')
 "
 ```
 
