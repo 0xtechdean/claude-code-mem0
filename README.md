@@ -1,5 +1,7 @@
 # mem0 Plugin for Claude Code
 
+[![Tests](https://github.com/0xtechdean/claude-code-mem0/actions/workflows/test.yml/badge.svg)](https://github.com/0xtechdean/claude-code-mem0/actions/workflows/test.yml)
+
 Persistent memory for Claude Code using [mem0.ai](https://mem0.ai) - remembers context across conversations.
 
 ## Features
