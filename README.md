@@ -95,10 +95,13 @@ The plugin will be active after restart.
 claude-code-mem0/
 ├── .claude-plugin/
 │   └── plugin.json           # Plugin metadata
+├── commands/
+│   └── save.md               # /mem0:save command
 ├── hooks/
 │   ├── hooks.json            # Hook configuration
 │   ├── userpromptsubmit.py   # Memory retrieval before prompts
-│   └── stop.py               # Memory storage on session end
+│   ├── stop.py               # Memory storage on session end
+│   └── save_manual.py        # Manual memory save script
 ├── skills/
 │   ├── configure/
 │   │   └── SKILL.md          # /mem0:configure skill
@@ -143,7 +146,11 @@ When a session ends, the plugin:
 | `MEM0_THRESHOLD` | Minimum similarity score (0-1) | `0.3` |
 | `MEM0_SAVE_MESSAGES` | Messages to save per session | `10` |
 
-## Skills
+## Commands & Skills
+
+### `/mem0:save`
+
+Manually save memories from the current conversation. Useful when you want to persist important context without ending the session.
 
 ### `/mem0:configure`
 
