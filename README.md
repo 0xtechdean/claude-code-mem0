@@ -13,17 +13,28 @@ Persistent memory for Claude Code using [mem0.ai](https://mem0.ai) - remembers c
 
 ### 1. Install the Plugin
 
-```bash
-# From Claude Code, run:
-/plugins install /path/to/plugins/mem0
-```
-
-Or add to your `.claude/settings.json`:
+Add to your `.claude/settings.json`:
 
 ```json
 {
   "plugins": [
-    "/path/to/plugins/mem0"
+    "github:0xtechdean/claude-code-mem0"
+  ]
+}
+```
+
+Or clone locally:
+
+```bash
+git clone https://github.com/0xtechdean/claude-code-mem0.git
+```
+
+Then add to settings:
+
+```json
+{
+  "plugins": [
+    "/path/to/claude-code-mem0"
   ]
 }
 ```
@@ -53,6 +64,28 @@ MEM0_THRESHOLD=0.3
 
 # Optional: Number of messages to save per session (default: 10)
 MEM0_SAVE_MESSAGES=10
+```
+
+### 4. Restart Claude Code
+
+The plugin will be active after restart.
+
+## Plugin Structure
+
+```
+claude-code-mem0/
+├── .claude-plugin/
+│   └── plugin.json           # Plugin metadata
+├── hooks/
+│   ├── hooks.json            # Hook configuration
+│   ├── userpromptsubmit.py   # Memory retrieval before prompts
+│   └── stop.py               # Memory storage on session end
+├── skills/
+│   ├── skills.json
+│   ├── configure/            # /mem0:configure
+│   └── status/               # /mem0:status
+├── .env.example
+└── README.md
 ```
 
 ## How It Works
@@ -103,7 +136,7 @@ Check the current configuration status and test the connection.
 
 ### Memories not being retrieved
 
-1. Verify `MEM0_API_KEY` is set correctly
+1. Verify `MEM0_API_KEY` is set correctly in `.env`
 2. Check that mem0ai is installed: `pip install mem0ai`
 3. Ensure you have existing memories in mem0
 4. Try lowering `MEM0_THRESHOLD` for broader matches
@@ -135,7 +168,7 @@ print(client.search('test', filters={'user_id': 'test'}))
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or pull request.
+Contributions are welcome! Please open an issue or pull request at [github.com/0xtechdean/claude-code-mem0](https://github.com/0xtechdean/claude-code-mem0).
 
 ## License
 
